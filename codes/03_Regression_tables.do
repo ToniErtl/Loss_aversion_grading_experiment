@@ -1,7 +1,14 @@
+
+// Note: Change these to your respective folder
+
+
 cd "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/new_stata_codes"
+global DATA "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/Loss_Aversion_public_repo/Loss_aversion_grading_experiment/Data/"
+
+
 
 * Read the data
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 
 * Read alternative data - for robustness
@@ -167,7 +174,7 @@ rwolf2 (reg final_test treatment_loss treatment_hybrid d_no female_loss female_h
 	
 	
 clear all
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 
 
@@ -207,9 +214,9 @@ eststo points
 
 * FIGURE 5: plot:
 global x d_no semester_tests d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork
-global z d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork
 quietly bootstrap, cluster(Group_cat) reps(100): rqr final_test loss_final, quantile(.15(.05).9) controls($x)
 rqrplot
+global z d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork
 
 
 
@@ -247,7 +254,7 @@ esttab, b(4) se(4) keep(loss_final) nomtitles tex
 * TABLE 5 -- Split  KNOWS DERAVATIVES OR NOT
 	
 	
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -285,7 +292,7 @@ eststo lm_exam_noderivates2
 
 * Read the data another time
 	
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 /*------------
 data cleaning after reading in the data
 ------------*/
@@ -348,7 +355,7 @@ esttab lm_exam_noderivates1  lm_exam_noderivates2 lm_exam_derivates1 lm_exam_der
 //---------------- #
 //---------------- #
 
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -374,7 +381,7 @@ replace final_test = (final_test / 40) * 100
 rename group_cat Group_cat	
 	
 	
-
+	
 	
 	
 	
@@ -404,13 +411,7 @@ eststo lm_exam_semesterctrl
 
 
 * TABLE 7 LaTex file
-
-	
-// NOTE: loss_semester stands for losing points throughout the semester, while
-// loss_final is losing points during the final test. In the paper, we show these in a single line,
-// as "Losing Points". This comment also stands for all further (and relevant) analyses.
-
-	
+	// Note that Losing points in the main text corresponds to loss_semester and loss_final merged into a single row
 esttab lm_test1 lm_test2 lm_test3 lm_test4 lm_semester_test lm_exam_score lm_exam_semesterctrl, ///
     label nodepvars mti("Regression Results") ///
     collabels(none) nonumbers booktabs ///
@@ -448,7 +449,7 @@ eststo lm_exam_score_gender
 regress final_test loss_final d_no semester_tests female_loss_final  d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
 eststo lm_exam_score_genders
 
-* Export the regression results to LaTeX -- Table 5 -- gender heterogeneity tests
+* Export the regression results to LaTeX -- Table 10 -- gender heterogeneity tests
 
 * Regr_3 in LaTex file
 
@@ -471,7 +472,7 @@ esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semest
 
 // # TABLE 8 - Gain vs. Loss Treatment 
 
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -587,7 +588,7 @@ esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semest
 
 // # TABLE 9 - Loss vs. Hybrid Treatment 
 
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -658,7 +659,7 @@ esttab lm_test1 lm_test2 lm_test3 lm_test4 lm_semester_test lm_exam_score lm_exa
 		
 // REGRESSIONS EXCLUDING DROPOUTS	
 	
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -725,7 +726,85 @@ esttab dropout1 dropout11  dropout2 dropout21 , ///
 //--------------------	
 // EXCLUSION OF DROPOUTS
 drop if dropout == 1	
-// # Table 15 regressions: 	
+
+
+	
+	
+// WITH ALL THREE TREATMENTS -- TABLES 15 AND 16	
+	
+regress test1 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
+eststo lm1
+
+regress test2 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
+eststo lm2
+
+
+regress test3 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
+eststo lm3
+
+
+regress test4 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
+eststo lm4
+
+regress semester_tests treatment_loss treatment_hybrid d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
+eststo lm5
+
+regress final_test treatment_loss treatment_hybrid d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
+eststo lm6
+
+
+regress final_test treatment_loss treatment_hybrid semester_tests d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
+eststo lm7
+
+// # TABLE 15
+
+esttab lm1 lm2 lm3 lm4 lm5 lm6 lm7, ///
+    label nodepvars mti("Regression Results") ///
+    collabels(none) nonumbers booktabs ///
+    star(* 0.10 ** 0.05 *** 0.01) se replace ///
+    stats(N r2 rmse, fmt(3) labels("Observations" "R-squared" "Residual Std. Error"))
+	
+	
+	
+* TABLE 16: gender heterogeneity
+	
+regress test1 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_test1_gender
+
+regress test2 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_test2_gender
+
+regress test3 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_test3_gender
+
+regress test4 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_test4_gender
+
+regress semester_tests treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_semester_test_gender
+	
+regress final_test treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
+eststo lm_exam_score_gender
+
+regress final_test treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday semester_tests, cluster(Group_cat)
+eststo lm_exam_score_gender2
+
+*TABLE 16: Export the regression results to LaTeX -- gender heterogeneity tests
+
+
+esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semester_test_gender lm_exam_score_gender lm_exam_score_gender2, ///
+    label nodepvars mti("Regression Results") ///
+    collabels(none) nonumbers booktabs ///
+    star(* 0.10 ** 0.05 *** 0.01) se replace ///
+    stats(N r2 rmse, fmt(3) labels("Observations" "R-squared" "Residual Std. Error"))
+
+
+
+
+
+
+
+// # Table 17 regressions: 	
 	
 regress test1 loss_semester d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
 eststo lm_test1
@@ -753,7 +832,7 @@ eststo lm_exam_semesterctrl
 
 
 
-* TABLE 15:
+* TABLE 17:
 	
 esttab lm_test1 lm_test2 lm_test3 lm_test4 lm_semester_test lm_exam_score lm_exam_semesterctrl, ///
     label nodepvars mti("Regression Results") ///
@@ -763,7 +842,7 @@ esttab lm_test1 lm_test2 lm_test3 lm_test4 lm_semester_test lm_exam_score lm_exa
 	
 	
 	
-// Corresponding gender heterogeneity: -- TABLE 16
+// Corresponding gender heterogeneity: -- TABLE 18
 
 
 gen female_loss_final = d_no * loss_final
@@ -792,7 +871,7 @@ eststo lm_exam_score_gender
 regress final_test loss_final d_no semester_tests female_loss_final  d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
 eststo lm_exam_score_genders
 
-* Export the regression results to LaTeX -- Table 16 -- gender heterogeneity tests
+* Export the regression results to LaTeX -- Table 18 -- gender heterogeneity tests
 
 esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semester_test_gender lm_exam_score_gender lm_exam_score_genders, ///
     label nodepvars mti("Regression Results") ///
@@ -801,76 +880,6 @@ esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semest
     stats(N r2 rmse, fmt(3) labels("Observations" "R-squared" "Residual Std. Error"))	
 	
 	
-	
-	
-// WITH ALL THREE TREATMENTS -- TABLES 17 AND 18	
-	
-regress test1 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
-eststo lm1
-
-regress test2 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
-eststo lm2
-
-
-regress test3 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
-eststo lm3
-
-
-regress test4 treatment_loss treatment_hybrid d_no d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday d_nowork, cluster(Group_cat)
-eststo lm4
-
-regress semester_tests treatment_loss treatment_hybrid d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
-eststo lm5
-
-regress final_test treatment_loss treatment_hybrid d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
-eststo lm6
-
-
-regress final_test treatment_loss treatment_hybrid semester_tests d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
-eststo lm7
-
-// # TABLE 17
-
-esttab lm1 lm2 lm3 lm4 lm5 lm6 lm7, ///
-    label nodepvars mti("Regression Results") ///
-    collabels(none) nonumbers booktabs ///
-    star(* 0.10 ** 0.05 *** 0.01) se replace ///
-    stats(N r2 rmse, fmt(3) labels("Observations" "R-squared" "Residual Std. Error"))
-	
-	
-	
-* TABLE 18: gender heterogeneity
-	
-regress test1 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_test1_gender
-
-regress test2 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_test2_gender
-
-regress test3 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_test3_gender
-
-regress test4 treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_test4_gender
-
-regress semester_tests treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_semester_test_gender
-	
-regress final_test treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
-eststo lm_exam_score_gender
-
-regress final_test treatment_loss treatment_hybrid d_no female_loss female_hybrid d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday semester_tests, cluster(Group_cat)
-eststo lm_exam_score_gender2
-
-*TABLE 18: Export the regression results to LaTeX -- gender heterogeneity tests
-
-
-esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semester_test_gender lm_exam_score_gender lm_exam_score_gender2, ///
-    label nodepvars mti("Regression Results") ///
-    collabels(none) nonumbers booktabs ///
-    star(* 0.10 ** 0.05 *** 0.01) se replace ///
-    stats(N r2 rmse, fmt(3) labels("Observations" "R-squared" "Residual Std. Error"))
-
 
 	
 	
@@ -885,7 +894,8 @@ esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semest
 //-------------------------------------------	
 //-------------------------------------------	
 	
-	// Regression Results using all students: In separate R code
+	// Regression Results using all students in separate R code:
+	// app_comparing_full_sampel_oursample.R file
 	
 //-------------------------------------------	
 //-------------------------------------------	
@@ -900,7 +910,7 @@ esttab lm_test1_gender lm_test2_gender lm_test3_gender lm_test4_gender lm_semest
 
 
 	
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 /*------------
 data cleaning after reading in the data
@@ -985,7 +995,7 @@ eststo lm_exam_semesterctrl0
 regress final_test treatment_loss treatment_hybrid  min_score_1 worst_score loss_mins_score1  d_no semester_tests d_mothereduc_uni d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar d_derivation time_slot_thursday time_slot_friday, cluster(Group_cat)
 eststo lm_exam_semesterctrl1
 		
-	
+// Table 23:	
 	
 esttab lm_semester_test0  lm_semester_test1  lm_exam_score0 lm_exam_score1 lm_exam_semesterctrl0 lm_exam_semesterctrl1, ///
     label nodepvars mti("Regression Results") ///
@@ -995,15 +1005,22 @@ esttab lm_semester_test0  lm_semester_test1  lm_exam_score0 lm_exam_score1 lm_ex
 	
 	
 	
+//----------------------	
+//----------------------	
+//----------------------	
+//----------------------	
 	
+	// Analyis of Final Questionnaire : app_followup.R file
 	
-	
-// --- Second Revision: 
+//----------------------	
 //----------------------	
 
 
+// Stepwise regression:
+
+
 * Read the data
-import delimited using "/Users/antalertl/Desktop/r_projects/2023_loss_aversion_classroom_experiment_BCE/data_clean.csv", clear
+import delimited using "${DATA}data_clean.csv", clear
 
 
 * Read alternative data - for robustness
@@ -1054,6 +1071,8 @@ eststo lm5
 regress semester_tests treatment_loss treatment_hybrid d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
 eststo lm6
 
+// TABLE 28
+
 
 esttab  lm2 lm3 lm4 lm5 lm6, ///
     label nodepvars mti("Regression Results") ///
@@ -1064,8 +1083,10 @@ esttab  lm2 lm3 lm4 lm5 lm6, ///
 
 	
 	
-// 	
-keep if d_okt3 == 1 | d_okt5 == 1 | d_okt6 ==1	
+// Regression results -- balanced subsample 	
+
+
+keep if d_okt3 == 1 | d_okt5 == 1 | d_okt6 ==1	// keep only those who were teaching in at least 3 classes
 	
 	
 	
@@ -1094,6 +1115,7 @@ eststo lm6
 regress final_test treatment_loss treatment_hybrid semester_tests d_no d_mothereduc_uni d_derivation d_nowork time_slot_thursday time_slot_friday d_okt3 d_okt4 d_okt5 d_okt6 d_okt7 d_szfvar, cluster(Group_cat)
 eststo lm7
 
+// Table 29:
 
 esttab lm1 lm2 lm3 lm4 lm5 lm6 lm7, ///
     label nodepvars mti("Regression Results") ///
